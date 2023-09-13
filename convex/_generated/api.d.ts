@@ -15,6 +15,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as openai from "../openai";
+import type * as prompts from "../prompts";
 import type * as text from "../text";
 import type * as transcripts from "../transcripts";
 import type * as video from "../video";
@@ -29,6 +30,7 @@ import type * as video from "../video";
  */
 declare const fullApi: ApiFromModules<{
   openai: typeof openai;
+  prompts: typeof prompts;
   text: typeof text;
   transcripts: typeof transcripts;
   video: typeof video;

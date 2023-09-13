@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from 'convex/server';
+import { v } from 'convex/values';
 
 export default defineSchema({
   transcripts: defineTable({
@@ -9,6 +9,7 @@ export default defineSchema({
     videoUploadDate: v.optional(v.string()),
     offset: v.number(),
     text: v.string(),
+    tag: v.string(),
   }),
 });
 

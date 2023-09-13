@@ -1,11 +1,11 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { api } from "./_generated/api";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
+import { api } from './_generated/api';
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("transcripts").collect();
+    return await ctx.db.query('transcripts').collect();
   },
 });
 
@@ -26,6 +26,7 @@ export const postChunks = mutation({
         videoUploadDate: v.optional(v.string()),
         offset: v.number(),
         text: v.string(),
+        tag: v.string(),
       })
     ),
   },
@@ -39,14 +40,16 @@ export const postChunks = mutation({
           videoUploadDate,
           offset,
           text,
+          tag,
         } = chunk;
-        await ctx.db.insert("transcripts", {
+        await ctx.db.insert('transcripts', {
           videoId,
           videoTitle,
           videoChannelName,
           videoUploadDate,
           offset,
           text,
+          tag,
         });
       })
     );
