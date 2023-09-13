@@ -6,14 +6,6 @@ You may add additional tags are your discretion, but I am looking for tags to be
 
 ###
 [
-  "Web Development",
-  "AI",
-  "React",
-  "Linux",
-  "Apple",
-  "Meta",
-  "Google",
-  "Amazon",
   "Technology",
   "Business",
   "News",

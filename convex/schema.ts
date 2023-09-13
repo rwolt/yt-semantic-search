@@ -10,11 +10,10 @@ export default defineSchema({
     offset: v.number(),
     text: v.string(),
     tag: v.string(),
+    embedding: v.array(v.float64()),
+  }).vectorIndex('by_embedding', {
+    vectorField: 'embedding',
+    dimensions: 1536,
+    filterFields: ['tag'],
   }),
 });
-
-//   .vectorIndex("by_embedding", {
-//     vectorField: "embedding",
-//     dimensions: 1536,
-//   }),
-// });

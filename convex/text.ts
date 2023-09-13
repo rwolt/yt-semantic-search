@@ -103,8 +103,6 @@ export const combineAndSplit = action({
       chunks.push(currentChunk);
     }
 
-    console.log(chunks);
-    // await ctx.runMutation(api.transcripts.postChunks(chunks));
     await ctx.scheduler.runAfter(0, api.openai.generateTags, { chunks });
   },
 });
