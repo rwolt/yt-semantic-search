@@ -17,6 +17,7 @@ import type {
 import type * as openai from "../openai";
 import type * as text from "../text";
 import type * as transcripts from "../transcripts";
+import type * as video from "../video";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   openai: typeof openai;
   text: typeof text;
   transcripts: typeof transcripts;
+  video: typeof video;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
