@@ -1,26 +1,33 @@
-'use node';
-import { YoutubeTranscript } from 'youtube-transcript';
-import { v } from 'convex/values';
-import { action } from './_generated/server';
-import { api } from './_generated/api';
+"use node";
+import { YoutubeTranscript } from "youtube-transcript";
+import { v } from "convex/values";
+import { action } from "./_generated/server";
+import { api } from "./_generated/api";
 
 export const fetch = action({
   args: { videoUrl: v.string() },
   handler: async (ctx, { videoUrl }) => {
-    const rawTranscript = await YoutubeTranscript.fetchTranscript(videoUrl);
-    console.log('fetched transcript');
-    await ctx.scheduler.runAfter(0, api.text.combineAndSplit, {
-      videoUrl,
-      transcript: rawTranscript,
-      maxCharacters: 3000,
-      overlapPercentage: 10,
-    });
+    const url = new URL(videoUrl);
+    const videoId = url.searchParams.get("v");
+    console.log(typeof videoId);
+    console.log(videoId);
+    if (videoId) {
+      const rawTranscript = await YoutubeTranscript.fetchTranscript(videoId);
+      await ctx.scheduler.runAfter(0, api.text.combineAndSplit, {
+        videoId,
+        transcript: rawTranscript,
+        maxCharacters: 3000,
+        overlapPercentage: 10,
+      });
+    } else {
+      throw new Error("Invalid video URL");
+    }
   },
 });
 
 export const combineAndSplit = action({
   args: {
-    videoUrl: v.string(),
+    videoId: v.string(),
     transcript: v.array(
       v.object({ text: v.string(), duration: v.number(), offset: v.number() })
     ),
@@ -29,29 +36,29 @@ export const combineAndSplit = action({
   },
   handler: async (
     ctx,
-    { videoUrl, transcript, maxCharacters, overlapPercentage }
+    { videoId, transcript, maxCharacters, overlapPercentage }
   ) => {
     const chunks = [];
     let currentChunk;
     let overlappingChunk;
-
     const overlapLength = maxCharacters * (overlapPercentage / 100);
+    console.log(transcript);
 
     for (const entry of transcript) {
       if (!currentChunk) {
-        currentChunk = { videoUrl, offset: entry.offset, text: entry.text };
+        currentChunk = { videoId, offset: entry.offset, text: entry.text };
       } else if (currentChunk.text.length < maxCharacters - overlapLength) {
-        currentChunk.text += entry.text + ' ';
+        currentChunk.text += entry.text + " ";
       } else if (currentChunk.text.length < maxCharacters) {
         if (!overlappingChunk) {
           overlappingChunk = {
-            videoUrl,
+            videoId,
             offset: entry.offset,
             text: entry.text,
           };
         } else {
-          currentChunk.text += entry.text + ' ';
-          overlappingChunk.text += entry.text + ' ';
+          currentChunk.text += entry.text + " ";
+          overlappingChunk.text += entry.text + " ";
         }
       } else {
         chunks.push(currentChunk);
@@ -63,9 +70,8 @@ export const combineAndSplit = action({
     if (currentChunk) {
       chunks.push(currentChunk);
     }
-    console.log(chunks.length);
-    console.log(chunks);
 
     await ctx.runMutation(api.transcripts.postChunks, { chunks });
+    // TODO hand chunks off to openai embeddings API
   },
 });

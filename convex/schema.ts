@@ -1,9 +1,9 @@
-import { defineSchema, defineTable } from 'convex/server';
-import { v } from 'convex/values';
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
 export default defineSchema({
   transcripts: defineTable({
-    videoUrl: v.string(),
+    videoId: v.string(),
     offset: v.number(),
     text: v.string(),
   }),

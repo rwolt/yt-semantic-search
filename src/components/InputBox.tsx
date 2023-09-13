@@ -3,6 +3,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 export const InputBox = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const postTranscript = useMutation(api.transcripts.post);
 
@@ -10,8 +11,15 @@ export const InputBox = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
-    await postTranscript({ videoUrl });
-    setVideoUrl("");
+    try {
+      await postTranscript({ videoUrl });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        console.error("Unexpected error: ", error);
+      }
+    }
   };
 
   return (
@@ -28,6 +36,7 @@ export const InputBox = () => {
           name="videoLinkInput"
           id="videoLinkInput"
         />
+        <p className="text-red-400">{errorMessage}</p>
         <button
           className="px-4 py-2 mt-2 rounded-md bg-black text-sky-400"
           onClick={(e) => handleClick(e)}
