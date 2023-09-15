@@ -1,37 +1,20 @@
-import { api } from '../../convex/_generated/api';
-import { useAction } from 'convex/react';
-import { useState } from 'react';
+import { useState } from "react";
 
-interface SearchResult {
-  score: number;
-  videoTitle?: string;
-  videoChannelName?: string;
-  videoUploadDate?: string;
-  text: string;
-  videoId: string;
-  offset: number;
-  tag: string;
-  embedding: number[];
-}
+type SearchBoxProps = {
+  handleSearch: (query: string) => Promise<void>;
+};
 
-export const SearchBox = () => {
-  const search = useAction(api.openai.similarTranscripts);
-  const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const handleClick = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+export const SearchBox = ({ handleSearch }: SearchBoxProps) => {
+  const [query, setQuery] = useState("");
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    setQuery('');
-    const results = await search({ descriptionQuery: query });
-    setSearchResults(results);
-    // setResults(similar);
-    // console.log(results);
+    handleSearch(query);
+    setQuery("");
   };
-
   return (
     <div>
-      <form className="flex flex-row align-center">
+      <form className="flex flex-row align-center m-2 px-2">
         <label htmlFor="search" className="flex flex-col justify-center mr-2">
           <p>Search Knowledge Base:</p>
         </label>
@@ -49,22 +32,16 @@ export const SearchBox = () => {
         >
           Search
         </button>
+        <label
+          htmlFor="searchFilter"
+          className="flex flex-col justify-center ml-4 mr-2"
+        >
+          Filter:{" "}
+        </label>
+        <select className="border-black border-2 rounded-xl px-3 py-1 ">
+          <option>Tech</option>
+        </select>
       </form>
-      {searchResults?.map((result) => {
-        return (
-          <div className="p-2 mb-3">
-            <a
-              href={`https://youtube.com/watch?v=${result.videoId}&t=${result.offset}`}
-            >
-              Link to Timecode
-            </a>
-            <p>Score: {result.score}</p>
-            <p>Video Title: {result.videoTitle}</p>
-            <p>Video Channel: {result.videoChannelName}</p>
-            <p>Transcript Text: {result.text}</p>
-          </div>
-        );
-      })}
     </div>
   );
 };

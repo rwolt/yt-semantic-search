@@ -1,10 +1,32 @@
+import { useAction } from "convex/react";
+import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 import { SearchBox } from "./SearchBox";
 import { SearchResults } from "./SearchResults";
+
+export type SearchResult = {
+  score: number;
+  videoTitle?: string;
+  videoChannelName?: string;
+  videoUploadDate?: string;
+  text: string;
+  videoId: string;
+  offset: number;
+  tag: string;
+  embedding: number[];
+};
+
 export const Search = () => {
+  const search = useAction(api.openai.similarTranscripts);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const handleSearch = async (query: string) => {
+    const results = await search({ descriptionQuery: query });
+    setSearchResults(results);
+  };
   return (
     <div>
-      <SearchBox />
-      <SearchResults />
+      <SearchBox handleSearch={handleSearch} />
+      <SearchResults searchResults={searchResults} />
     </div>
   );
 };
