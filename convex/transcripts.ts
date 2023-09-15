@@ -1,11 +1,11 @@
-import { api } from './_generated/api';
-import { v } from 'convex/values';
-import { internalQuery, mutation, query } from './_generated/server';
+import { api } from "./_generated/api";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query('transcripts').collect();
+    return await ctx.db.query("transcripts").collect();
   },
 });
 
@@ -44,7 +44,7 @@ export const postChunks = mutation({
           tag,
           embedding,
         } = chunk;
-        await ctx.db.insert('transcripts', {
+        await ctx.db.insert("transcripts", {
           videoId,
           videoTitle,
           videoChannelName,
@@ -70,7 +70,7 @@ export const getSimilar = mutation({
 
 export const fetchResults = query({
   args: {
-    ids: v.array(v.id('transcripts')),
+    ids: v.array(v.id("transcripts")),
   },
   handler: async (ctx, args) => {
     const results = [];

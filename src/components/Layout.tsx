@@ -1,5 +1,6 @@
-import { SideBar } from './SideBar';
-import { Header } from './Header';
+import { SideBar } from "./SideBar";
+import { Header } from "./Header";
+import { Main } from "./Main";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -10,7 +11,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       <main>
         <div className="flex flex-row w-full">
           <SideBar />
-          {children}
+          <Main />
+          {/* {children} */}
         </div>
       </main>
       <footer></footer>
