@@ -4,9 +4,9 @@
 
 - [x] Fetch video transcript using youtube-transcript
 - [x] Use helper script to split transcript into ~600 token chunks
-- [ ] Generate embeddings for each chunk and add to vector store
-- [ ] Add logic for vector search using embedding generated from user query
-- [ ] Prompt OpenAI Chat API using JSON formatted transcripts and user query as context
+- [x] Generate embeddings for each chunk and add to vector store
+- [x] Add logic for vector search using embedding generated from user query
+- [x] Prompt OpenAI Chat API using JSON formatted transcripts and user query as context
 
 ## Getting source citations in response
 

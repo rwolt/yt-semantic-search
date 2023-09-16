@@ -16,4 +16,7 @@ export default defineSchema({
     dimensions: 1536,
     filterFields: ['tag'],
   }),
+  messages: defineTable({
+    text: v.string(),
+  }),
 });

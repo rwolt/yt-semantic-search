@@ -108,3 +108,6 @@ You may add additional tags are your discretion, but I am looking for tags to be
   "Celebrity Gossip"
 ]
 ###`;
+
+export const searchResponsePrompt =
+  'You are a helpful assistant that uses the provided video transcripts to answer questions. Include a relevant source citation for each statement.';

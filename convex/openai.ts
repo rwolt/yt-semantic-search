@@ -2,7 +2,7 @@ import { v } from 'convex/values';
 import { action } from './_generated/server';
 import { api } from './_generated/api';
 import { OpenAI } from 'openai';
-import { generateTagsSystemMessage } from './prompts';
+import { generateTagsSystemMessage, searchResponsePrompt } from './prompts';
 import { Doc } from './_generated/dataModel';
 
 const openai = new OpenAI({
@@ -23,7 +23,6 @@ export const generateTags = action({
     ),
   },
   handler: async (ctx, { chunks }) => {
-    console.log('hello openai');
     const completion = await openai.chat.completions.create({
       messages: [
         { role: 'system', content: `${generateTagsSystemMessage}` },
@@ -101,8 +100,48 @@ export const similarTranscripts = action({
         ids: results.map((result) => result._id),
       }
     );
-    return transcripts.map((transcript, idx) => {
-      return { ...transcript, score: results[idx]._score };
+    const transcriptsWithScores = transcripts.map((transcript, idx) => {
+      const { embedding, _creationTime, ...rest } = transcript;
+      return { ...rest, score: results[idx]._score };
     });
+
+    await ctx.scheduler.runAfter(0, api.openai.chatResponse, {
+      query: descriptionQuery,
+      docs: transcriptsWithScores.slice(0, 3),
+    });
+    return transcriptsWithScores;
+  },
+});
+
+export const chatResponse = action({
+  args: {
+    query: v.string(),
+    docs: v.array(
+      v.object({
+        _id: v.id('transcripts'),
+        videoId: v.string(),
+        videoTitle: v.optional(v.string()),
+        videoChannelName: v.optional(v.string()),
+        videoUploadDate: v.optional(v.string()),
+        offset: v.number(),
+        text: v.string(),
+        tag: v.string(),
+        score: v.number(),
+      })
+    ),
+  },
+  handler: async (ctx, { query, docs }) => {
+    const completion = await openai.chat.completions.create({
+      messages: [
+        { role: 'system', content: `${searchResponsePrompt}` },
+        { role: 'user', content: JSON.stringify(docs) + query },
+      ],
+      model: 'gpt-3.5-turbo',
+    });
+    const messageText = completion.choices[0].message.content;
+    console.log(messageText);
+    if (typeof messageText === 'string') {
+      await ctx.runMutation(api.message.post, { text: messageText });
+    }
   },
 });
