@@ -5,29 +5,33 @@ export const VideoContainer = () => {
   const { videoInfo } = useVideoContext();
   const playerRef = useRef<YT.Player | null>(null);
 
+  window.onYouTubeIframeAPIReady = () => {
+    if (playerRef.current) {
+      loadVideoWithTime(videoInfo);
+    } else {
+      playerRef.current = new YT.Player('video-player', {
+        height: '360',
+        width: '640',
+        videoId: videoInfo.videoId || 'xm3YgoEiEDc',
+        playerVars: {
+          start: videoInfo.timeInSeconds,
+          autoplay: 1,
+        },
+        events: {
+          onReady: onPlayerReady,
+        },
+      });
+    }
+  };
+
   useEffect(() => {
-    window.onYouTubeIframeAPIReady = () => {
-      if (playerRef.current) {
-        loadVideoWithTime(videoInfo);
-      } else {
-        playerRef.current = new YT.Player('video-player', {
-          height: '360',
-          width: '640',
-          videoId: videoInfo.videoId || 'xm3YgoEiEDc',
-          playerVars: {
-            start: videoInfo.timeInSeconds || 0,
-            autoplay: 1,
-          },
-          events: {
-            onReady: onPlayerReady,
-          },
-        });
-      }
-    };
+    loadVideoWithTime(videoInfo);
   }, [videoInfo]);
 
   const loadVideoWithTime = ({ videoId, timeInSeconds }: VideoInfo) => {
+    console.log('before conditional loadingVideo');
     if (playerRef.current) {
+      console.log('after conditional loadingVideo');
       playerRef.current.loadVideoById({
         videoId,
         startSeconds: timeInSeconds,
@@ -35,8 +39,9 @@ export const VideoContainer = () => {
     }
   };
 
-  const onPlayerReady = (e) => {
-    e.target.playVideo();
+  const onPlayerReady = (event) => {
+    console.log('on player ready');
+    event.target.playVideo();
   };
 
   return (
