@@ -43,7 +43,7 @@ export const SearchBox = ({ handleSearch }: SearchBoxProps) => {
             className="border-black border-2 rounded-md px-3 py-1 grow"
             onChange={(e) => setFilter(e.target.value)}
           >
-            <option value="undefined">None</option>
+            <option value="">None</option>
             {tags?.map((tag) => {
               return <option value={tag}>{tag}</option>;
             })}

@@ -1,5 +1,5 @@
-import { Layout } from '../components/Layout';
-import { SearchBox } from '../components/SearchBox';
+import { Layout } from "../components/Layout";
+import { SearchBox } from "../components/SearchBox";
 
 export const Home: React.FC = () => {
   return (

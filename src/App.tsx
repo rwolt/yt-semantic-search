@@ -1,6 +1,7 @@
 // import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Home } from './pages/Home';
-import { VideoProvider } from './VideoContext';
+import { Unauthenticated, Authenticated } from "convex/react";
+import { Home } from "./pages/Home";
+import { VideoProvider } from "./VideoContext";
 
 // const router = createBrowserRouter([
 //   {
@@ -11,9 +12,11 @@ import { VideoProvider } from './VideoContext';
 
 const App: React.FC = () => {
   return (
-    <VideoProvider>
-      <Home />
-    </VideoProvider>
+    <div>
+      <VideoProvider>
+        <Home />
+      </VideoProvider>
+    </div>
   );
 };
 
