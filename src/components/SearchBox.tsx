@@ -14,9 +14,9 @@ export const SearchBox = ({ handleSearch }: SearchBoxProps) => {
   };
   return (
     <div>
-      <form className="flex flex-row align-center m-2 px-2">
+      <form className="flex flex-row align-center py-2 justify-between">
         <label htmlFor="search" className="flex flex-col justify-center mr-2">
-          <p>Search Knowledge Base:</p>
+          <p className="text-lg">Search</p>
         </label>
         <input
           className="border-black border-2 rounded-xl px-3 py-1 w-1/2"

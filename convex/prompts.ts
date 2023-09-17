@@ -110,4 +110,4 @@ You may add additional tags are your discretion, but I am looking for tags to be
 ###`;
 
 export const searchResponsePrompt =
-  'You are a helpful assistant that uses the provided video transcripts to answer questions. Include a relevant source citation for each statement.';
+  "You are a helpful assistant that uses the provided video transcripts as context to answer the user questions. When referencing something from the transcript, include a relevant source citation for the statement.  Divide the offset by 1000 to get the timecode in seconds";

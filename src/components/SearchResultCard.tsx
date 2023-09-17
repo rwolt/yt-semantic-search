@@ -1,5 +1,5 @@
-import { SearchResult } from './Search';
-import { useVideoContext } from '../VideoContext';
+import { SearchResult } from "./Search";
+import { useVideoContext } from "../VideoContext";
 
 type SearchResultCardProps = {
   result: SearchResult;
@@ -21,18 +21,20 @@ export const SearchResultCard = ({ result }: SearchResultCardProps) => {
     setVideo(result.videoId, timeInSeconds);
   };
   return (
-    <div className=" p-2 bg-slate-200 rounded-md">
-      <p>Score: {result.score.toFixed(4)}</p>
-      {/* <p>Timecode: {formatTimeCode(result.offset)}</p> */}
+    <div className=" px-2 ">
       <a
         href={`https://www.youtube.com/watch?v=${result.videoId}&t=${timeInSeconds}s`}
         onClick={handleVideoLinkClick}
       >
-        {formatTimeCode(result.offset)}
+        <div className="flex justify-between">
+          <p> {result.videoTitle}</p>
+          {/* {formatTimeCode(result.offset)} */}
+          <p>Score: {result.score.toFixed(2)}</p>
+        </div>
+        <p> {result.videoChannelName}</p>
+        {/* <p>Transcript Text: {result.text}</p> */}
+        <div className="flex justify-end"></div>
       </a>
-      <p>Video Title: {result.videoTitle}</p>
-      <p>Video Channel: {result.videoChannelName}</p>
-      {/* <p>Transcript Text: {result.text}</p> */}
     </div>
   );
 };

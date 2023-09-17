@@ -1,12 +1,17 @@
+import { Chat } from "./Chat";
 import { Preview } from "./Preview";
 import { Search } from "./Search";
+import { VideoContainer } from "./VideoContainer";
 export const Main = () => {
   return (
-    <div className="flex flex-col w-full">
-      <div className="min-h-[50vh]">
-        <Preview />
+    <div className="flex flex-row w-auto ">
+      <div className="flex flex-col p-4">
+        <VideoContainer />
+        <Search />
       </div>
-      <Search />
+      <div>
+        <Chat />
+      </div>
     </div>
   );
 };

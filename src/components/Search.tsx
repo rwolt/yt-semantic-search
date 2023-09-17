@@ -5,6 +5,7 @@ import { SearchBox } from "./SearchBox";
 import { SearchResults } from "./SearchResults";
 
 export type SearchResult = {
+  _id: string;
   score: number;
   videoTitle?: string;
   videoChannelName?: string;
@@ -13,7 +14,6 @@ export type SearchResult = {
   videoId: string;
   offset: number;
   tag: string;
-  embedding: number[];
 };
 
 export const Search = () => {
