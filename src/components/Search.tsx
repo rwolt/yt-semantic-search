@@ -19,7 +19,7 @@ export type SearchResult = {
 export const Search = () => {
   const search = useAction(api.openai.similarTranscripts);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const handleSearch = async (query: string, filter: string) => {
+  const handleSearch = async (query: string, filter: string | undefined) => {
     const results = await search({
       descriptionQuery: query,
       filterTag: filter,

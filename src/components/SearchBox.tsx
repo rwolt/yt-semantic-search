@@ -3,12 +3,12 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 type SearchBoxProps = {
-  handleSearch: (query: string, filter: string) => Promise<void>;
+  handleSearch: (query: string, filter: string | undefined) => Promise<void>;
 };
 
 export const SearchBox = ({ handleSearch }: SearchBoxProps) => {
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("none");
+  const [filter, setFilter] = useState<string | undefined>(undefined);
   const tags = useQuery(api.transcripts.getTags);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -43,7 +43,7 @@ export const SearchBox = ({ handleSearch }: SearchBoxProps) => {
             className="border-black border-2 rounded-md px-3 py-1 grow"
             onChange={(e) => setFilter(e.target.value)}
           >
-            <option value="none">None</option>
+            <option>None</option>
             {tags?.map((tag) => {
               return <option value={tag}>{tag}</option>;
             })}

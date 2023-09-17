@@ -1,10 +1,9 @@
 import { v } from "convex/values";
-import { action } from "./_generated/server";
+import { action, query } from "./_generated/server";
 import { api } from "./_generated/api";
 import { OpenAI } from "openai";
 import { generateTagsSystemMessage, searchResponsePrompt } from "./prompts";
 import { Doc } from "./_generated/dataModel";
-import { Id } from "./_generated/dataModel";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -82,7 +81,7 @@ export const generateEmbeddings = action({
 export const similarTranscripts = action({
   args: {
     descriptionQuery: v.string(),
-    filterTag: v.string(),
+    filterTag: v.optional(v.string()),
   },
   handler: async (ctx, { descriptionQuery, filterTag }) => {
     const response = await openai.embeddings.create({
@@ -92,40 +91,43 @@ export const similarTranscripts = action({
     const queryEmbedding = response.data[0].embedding;
     // Search for similar transcripts
     //
-    let results: {
-      _id: Id<"transcripts">;
-      _score: number;
-    }[] = [];
+    // let results: {
+    //   _id: Id<"transcripts">;
+    //   _score: number;
+    // }[] = [];
 
-    if (filterTag === "none") {
-      results = await ctx.vectorSearch("transcripts", "by_embedding", {
-        vector: queryEmbedding,
-        limit: 16,
-      });
-    } else {
-      results = await ctx.vectorSearch("transcripts", "by_embedding", {
-        vector: queryEmbedding,
-        limit: 16,
-        filter: (q) => q.eq("tag", filterTag),
-      });
-      // Fetch the results
-      const transcripts: Array<Doc<"transcripts">> = await ctx.runQuery(
-        api.transcripts.fetchResults,
-        {
-          ids: results.map((result) => result._id),
-        }
-      );
-      const transcriptsWithScores = transcripts.map((transcript, idx) => {
-        const { embedding, _creationTime, ...rest } = transcript;
-        return { ...rest, score: results[idx]._score };
-      });
+    // const queryParams: {
+    //   vector: number[];
+    //   limit: number;
+    //   filter?: (q: VectorFilterBuilder) => FilterExpression;
+    // } = {
+    //   vector: queryEmbedding,
+    //   limit: 16,
+    // };
 
-      await ctx.scheduler.runAfter(0, api.openai.chatResponse, {
-        query: descriptionQuery,
-        docs: transcriptsWithScores.slice(0, 3),
-      });
-      return transcriptsWithScores;
-    }
+    const results = await ctx.vectorSearch("transcripts", "by_embedding", {
+      vector: queryEmbedding,
+      limit: 16,
+      ...(filterTag && { filter: (q) => q.eq("tag", filterTag) }),
+    });
+
+    // Fetch the results
+    const transcripts: Array<Doc<"transcripts">> = await ctx.runQuery(
+      api.transcripts.fetchResults,
+      {
+        ids: results.map((result) => result._id),
+      }
+    );
+    const transcriptsWithScores = transcripts.map((transcript, idx) => {
+      const { embedding, _creationTime, ...rest } = transcript;
+      return { ...rest, score: results[idx]._score };
+    });
+
+    await ctx.scheduler.runAfter(0, api.openai.chatResponse, {
+      query: descriptionQuery,
+      docs: transcriptsWithScores.slice(0, 3),
+    });
+    return transcriptsWithScores;
   },
 });
 
