@@ -4,7 +4,7 @@ import { Main } from "./Main";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col max-h-screen overflow-auto">
       <header>
         <Header />
       </header>

@@ -60,10 +60,11 @@ export const postChunks = mutation({
 });
 
 export const getSimilar = mutation({
-  args: { query: v.string() },
+  args: { query: v.string(), filterTag: v.string() },
   handler: async (ctx, args) => {
     await ctx.scheduler.runAfter(0, api.openai.similarTranscripts, {
       descriptionQuery: args.query,
+      filterTag: args.filterTag,
     });
   },
 });
@@ -82,5 +83,20 @@ export const fetchResults = query({
       results.push(doc);
     }
     return results;
+  },
+});
+
+export const getTags = query({
+  args: {},
+  handler: async (ctx) => {
+    const docs = await ctx.db.query("transcripts").order("desc").collect();
+
+    const uniqueTags: string[] = [];
+    docs.forEach((doc) => {
+      if (doc.tag !== undefined && uniqueTags.indexOf(doc.tag) === -1) {
+        uniqueTags.push(doc.tag);
+      }
+    });
+    return uniqueTags;
   },
 });

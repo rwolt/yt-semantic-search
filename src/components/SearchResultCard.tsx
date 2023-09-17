@@ -21,14 +21,15 @@ export const SearchResultCard = ({ result }: SearchResultCardProps) => {
     setVideo(result.videoId, timeInSeconds);
   };
   return (
-    <div className=" px-2 ">
+    <div className=" px-2 border-b  border-gray-300 last:border-none">
       <a
         href={`https://www.youtube.com/watch?v=${result.videoId}&t=${timeInSeconds}s`}
         onClick={handleVideoLinkClick}
       >
         <div className="flex justify-between">
-          <p> {result.videoTitle}</p>
-          {/* {formatTimeCode(result.offset)} */}
+          <p>
+            {formatTimeCode(result.offset)} - {result.videoTitle}
+          </p>
           <p>Score: {result.score.toFixed(2)}</p>
         </div>
         <p> {result.videoChannelName}</p>

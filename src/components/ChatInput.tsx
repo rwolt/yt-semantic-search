@@ -1,7 +1,16 @@
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 export const ChatInput = () => {
   return (
-    <form>
-      <input type="text" name="chat"></input>
+    <form className="flex flex-row items-center border-gray-500 border absolute bottom-0 focus-within:outline-1 rounded-md ">
+      <input
+        type="text"
+        name="chat"
+        placeholder="Send a Message"
+        className="outline-none grow focus:outline-none rounded-md py-2 px-4"
+      />
+      <button>
+        <PaperAirplaneIcon className="w-6 absolute bottom-2 right-4" />
+      </button>
     </form>
   );
 };

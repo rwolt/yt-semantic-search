@@ -6,7 +6,7 @@ type SearchResultProps = {
 };
 export const SearchResults = ({ searchResults }: SearchResultProps) => {
   return (
-    <div className="w-100 grid grid-cols-1 gap-2  ">
+    <div className="w-100 grid grid-cols-1 gap-2 h-full overflow-auto ">
       {searchResults?.map((result) => {
         return <SearchResultCard key={result._id} result={result} />;
       })}

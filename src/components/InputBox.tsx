@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
+import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export const InputBox = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [videoUrl, setVideoUrl] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   const postTranscript = useMutation(api.transcripts.post);
@@ -16,14 +16,14 @@ export const InputBox = () => {
     setLoading(true);
     try {
       await postTranscript({ videoUrl });
-      setVideoUrl('');
+      setVideoUrl("");
       setLoading(false);
     } catch (error: unknown) {
       setLoading(false);
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        console.error('Unexpected error: ', error);
+        console.error("Unexpected error: ", error);
       }
     }
   };
@@ -34,7 +34,7 @@ export const InputBox = () => {
         Enter video link to add to knowledge base
       </label>
       <input
-        className="text-black"
+        className="text-black rounded-md px-2"
         type="text"
         value={videoUrl}
         onChange={(e) => setVideoUrl(e.target.value)}
@@ -44,7 +44,7 @@ export const InputBox = () => {
       <p className="text-red-400">{errorMessage}</p>
       <button
         className={`px-4 py-2 mt-2 rounded-md bg-black text-sky-400 ${
-          loading && 'disabled '
+          loading && "disabled "
         }`}
         onClick={(e) => handleClick(e)}
       >
