@@ -26,15 +26,16 @@ export const generateTags = action({
     const completion = await openai.chat.completions.create({
       messages: [
         { role: "system", content: `${generateTagsSystemMessage}` },
-        { role: "user", content: JSON.stringify(chunks.slice(0, 4)) },
+        { role: "user", content: JSON.stringify(chunks.slice(0, 2)) },
       ],
       model: "gpt-3.5-turbo",
     });
     const tag = completion.choices[0].message.content || "";
+    console.log("generated tag: ", tag);
     const taggedChunks = chunks.map((chunk) => {
       return { ...chunk, tag: tag };
     });
-
+    console.log("tagged the chunks. chunks length: ", taggedChunks.length);
     await ctx.scheduler.runAfter(0, api.openai.generateEmbeddings, {
       chunks: taggedChunks,
     });
@@ -56,25 +57,28 @@ export const generateEmbeddings = action({
     ),
   },
   handler: async (ctx, { chunks }) => {
-    // const response = await openai.embeddings.create({
-    //   model: 'text-embedding-ada-002',
-    //   input: chunks[0].text,
-    // });
+    console.log("generating embeddings...\n");
+    const allTexts = chunks.map((chunk) => chunk.text);
+    console.log(allTexts.slice(0, 2));
+    try {
+      const response = await openai.embeddings.create({
+        model: "text-embedding-ada-002",
+        input: allTexts,
+      });
+      const embeddings = response.data.map((item) => item.embedding);
 
-    // console.log(response.data[0].embedding);
-    const chunksWithEmbeddings = await Promise.all(
-      chunks.map(async (chunk) => {
-        const response = await openai.embeddings.create({
-          model: "text-embedding-ada-002",
-          input: chunk.text,
-        });
-        const embedding = response.data[0].embedding;
-        return { ...chunk, embedding };
-      })
-    );
-    await ctx.runMutation(api.transcripts.postChunks, {
-      chunks: chunksWithEmbeddings,
-    });
+      // Combine embeddings with chunks
+      const chunksWithEmbeddings = chunks.map((chunk, index) => {
+        return { ...chunk, embedding: embeddings[index] };
+      });
+
+      console.log("calling post chunks mutation");
+      await ctx.runMutation(api.transcripts.postChunks, {
+        chunks: chunksWithEmbeddings,
+      });
+    } catch (error) {
+      console.error("Error processsing embeddings: ", error);
+    }
   },
 });
 
@@ -104,12 +108,16 @@ export const similarTranscripts = action({
     //   vector: queryEmbedding,
     //   limit: 16,
     // };
-
+    console.log(filterTag);
     const results = await ctx.vectorSearch("transcripts", "by_embedding", {
       vector: queryEmbedding,
       limit: 16,
-      ...(filterTag && { filter: (q) => q.eq("tag", filterTag) }),
+      ...(filterTag && {
+        filter: (q) => q.eq("tag", filterTag),
+      }),
     });
+
+    console.log(results.filter);
 
     // Fetch the results
     const transcripts: Array<Doc<"transcripts">> = await ctx.runQuery(

@@ -32,6 +32,7 @@ export const postChunks = mutation({
     ),
   },
   handler: async (ctx, { chunks }) => {
+    console.log("posting chunks with embeddings...");
     await Promise.all(
       chunks.map(async (chunk) => {
         const {

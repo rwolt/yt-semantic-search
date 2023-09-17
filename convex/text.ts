@@ -1,9 +1,9 @@
-'use node';
-import { YoutubeTranscript } from 'youtube-transcript';
-import { Client } from 'youtubei';
-import { v } from 'convex/values';
-import { action } from './_generated/server';
-import { api } from './_generated/api';
+"use node";
+import { YoutubeTranscript } from "youtube-transcript";
+import { Client } from "youtubei";
+import { v } from "convex/values";
+import { action } from "./_generated/server";
+import { api } from "./_generated/api";
 
 const youtube = new Client();
 
@@ -11,7 +11,7 @@ export const fetch = action({
   args: { videoUrl: v.string() },
   handler: async (ctx, { videoUrl }) => {
     const url = new URL(videoUrl);
-    const videoId = url.searchParams.get('v');
+    const videoId = url.searchParams.get("v");
     if (videoId) {
       const video = await youtube.getVideo(videoId);
       const videoTitle = await video?.title;
@@ -20,8 +20,9 @@ export const fetch = action({
 
       const rawTranscript = await YoutubeTranscript.fetchTranscript(videoId);
       if (!rawTranscript) {
-        throw new Error('Error fetching transcript');
+        throw new Error("Error fetching transcript");
       }
+      console.log("Fetched transcript");
       await ctx.scheduler.runAfter(0, api.text.combineAndSplit, {
         videoId,
         videoTitle,
@@ -32,7 +33,7 @@ export const fetch = action({
         overlapPercentage: 10,
       });
     } else {
-      throw new Error('Invalid video URL');
+      throw new Error("Invalid video URL");
     }
   },
 });
@@ -77,7 +78,7 @@ export const combineAndSplit = action({
           text: entry.text,
         };
       } else if (currentChunk.text.length < maxCharacters - overlapLength) {
-        currentChunk.text += entry.text + ' ';
+        currentChunk.text += entry.text + " ";
       } else if (currentChunk.text.length < maxCharacters) {
         if (!overlappingChunk) {
           overlappingChunk = {
@@ -89,8 +90,8 @@ export const combineAndSplit = action({
             text: entry.text,
           };
         } else {
-          currentChunk.text += entry.text + ' ';
-          overlappingChunk.text += entry.text + ' ';
+          currentChunk.text += entry.text + " ";
+          overlappingChunk.text += entry.text + " ";
         }
       } else {
         chunks.push(currentChunk);
@@ -102,7 +103,7 @@ export const combineAndSplit = action({
     if (currentChunk) {
       chunks.push(currentChunk);
     }
-
+    console.log("split transcript");
     await ctx.scheduler.runAfter(0, api.openai.generateTags, { chunks });
   },
 });

@@ -1,5 +1,4 @@
 import { Chat } from "./Chat";
-import { Preview } from "./Preview";
 import { Search } from "./Search";
 import { VideoContainer } from "./VideoContainer";
 export const Main = () => {
