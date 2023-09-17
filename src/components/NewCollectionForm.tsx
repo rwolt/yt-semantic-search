@@ -16,7 +16,9 @@ export const NewCollectionForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await createCollection({ name: collectionName, owner: user.id });
+      if (user) {
+        await createCollection({ name: collectionName, owner: user.id });
+      }
       setCollectionName('');
       setLoading(false);
     } catch (error) {

@@ -2,7 +2,11 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { VideoListItem } from './VideoListItem';
 
-export const VideoList = () => {
+type VideoListProps = {
+  collection: string;
+};
+
+export const VideoList = ({ collection }: VideoListProps) => {
   const videoItems = useQuery(api.video.getTitles);
 
   return (
