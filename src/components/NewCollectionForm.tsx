@@ -1,15 +1,14 @@
-import { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
 import { useUser } from '@clerk/clerk-react';
+import { useState } from 'react';
+import { api } from '../../convex/_generated/api';
+import { useMutation } from 'convex/react';
 
-export const InputBox = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [videoUrl, setVideoUrl] = useState('');
+export const NewCollectionForm = () => {
+  const [collectionName, setCollectionName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const { user } = useUser();
-
-  const postTranscript = useMutation(api.transcripts.post);
+  const createCollection = useMutation(api.collection.post);
 
   const handleClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -17,10 +16,10 @@ export const InputBox = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await postTranscript({ videoUrl });
-      setVideoUrl('');
+      await createCollection({ name: collectionName, owner: user.id });
+      setCollectionName('');
       setLoading(false);
-    } catch (error: unknown) {
+    } catch (error) {
       setLoading(false);
       if (error instanceof Error) {
         setErrorMessage(error.message);
@@ -32,16 +31,16 @@ export const InputBox = () => {
 
   return (
     <form className="flex flex-col align-center p-4 bg-slate-500 text-neutral-300  rounded-md">
-      <label htmlFor="videoLinkInput">
-        Enter video link to add to knowledge base
+      <label htmlFor="collectionNameInput">
+        Enter a name to create a new collection
       </label>
       <input
         className="text-black rounded-md px-2"
         type="text"
-        value={videoUrl}
-        onChange={(e) => setVideoUrl(e.target.value)}
-        name="videoLinkInput"
-        id="videoLinkInput"
+        value={collectionName}
+        onChange={(e) => setCollectionName(e.target.value)}
+        name="collectionNameInput"
+        id="collectionNameInput"
       />
       <p className="text-red-400">{errorMessage}</p>
       <button
@@ -50,7 +49,7 @@ export const InputBox = () => {
         }`}
         onClick={(e) => handleClick(e)}
       >
-        Add to Knowledge Base
+        Create Collection
       </button>
     </form>
   );

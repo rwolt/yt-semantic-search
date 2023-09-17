@@ -1,0 +1,36 @@
+import { query, mutation } from './_generated/server';
+import { v } from 'convex/values';
+
+export const get = query({
+  args: {
+    collectionId: v.id('collections'),
+  },
+  handler: async (ctx, { collectionId }) => {
+    const collection = await ctx.db.get(collectionId);
+    return collection;
+  },
+});
+
+export const getUserCollections = query({
+  args: {
+    userId: v.optional(v.string()),
+  },
+  handler: async (ctx, { userId }) => {
+    const collections = await ctx.db
+      .query('collections')
+      .filter((q) => q.eq(q.field('owner'), userId))
+      .collect();
+
+    return collections;
+  },
+});
+
+export const post = mutation({
+  args: {
+    name: v.string(),
+    owner: v.string(),
+  },
+  handler: async (ctx, { name, owner }) => {
+    await ctx.db.insert('collections', { name, owner });
+  },
+});

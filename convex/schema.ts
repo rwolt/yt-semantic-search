@@ -19,4 +19,8 @@ export default defineSchema({
   messages: defineTable({
     text: v.string(),
   }),
+  collections: defineTable({
+    name: v.string(),
+    owner: v.string(),
+  }),
 });
