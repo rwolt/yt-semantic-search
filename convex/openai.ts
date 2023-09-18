@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, query } from "./_generated/server";
+import { action } from "./_generated/server";
 import { api } from "./_generated/api";
 import { OpenAI } from "openai";
 import { generateTagsSystemMessage, searchResponsePrompt } from "./prompts";
@@ -13,6 +13,7 @@ export const generateTags = action({
   args: {
     chunks: v.array(
       v.object({
+        collectionId: v.union(v.id("collections"), v.literal("all")),
         videoId: v.string(),
         videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
@@ -46,6 +47,7 @@ export const generateEmbeddings = action({
   args: {
     chunks: v.array(
       v.object({
+        collectionId: v.union(v.id("collections"), v.literal("all")),
         videoId: v.string(),
         videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
@@ -84,10 +86,11 @@ export const generateEmbeddings = action({
 
 export const similarTranscripts = action({
   args: {
+    collectionId: v.union(v.id("collections"), v.literal("all")),
     descriptionQuery: v.string(),
     filterTag: v.optional(v.string()),
   },
-  handler: async (ctx, { descriptionQuery, filterTag }) => {
+  handler: async (ctx, { descriptionQuery, filterTag, collectionId }) => {
     const response = await openai.embeddings.create({
       model: "text-embedding-ada-002",
       input: descriptionQuery,
@@ -112,6 +115,7 @@ export const similarTranscripts = action({
     const results = await ctx.vectorSearch("transcripts", "by_embedding", {
       vector: queryEmbedding,
       limit: 16,
+      filter: (q) => q.eq("collectionId", collectionId),
       ...(filterTag && {
         filter: (q) => q.eq("tag", filterTag),
       }),

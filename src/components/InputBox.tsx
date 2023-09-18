@@ -1,13 +1,19 @@
-import { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
-import { useUser } from '@clerk/clerk-react';
+import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
-export const InputBox = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [videoUrl, setVideoUrl] = useState('');
+type InputBoxProps = {
+  collection: {
+    name: string;
+    id: Id<"collections"> | "all";
+  };
+};
+
+export const InputBox = ({ collection }: InputBoxProps) => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useUser();
 
   const postTranscript = useMutation(api.transcripts.post);
 
@@ -17,15 +23,15 @@ export const InputBox = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await postTranscript({ videoUrl });
-      setVideoUrl('');
+      await postTranscript({ videoUrl, collectionId: collection.id });
+      setVideoUrl("");
       setLoading(false);
     } catch (error: unknown) {
       setLoading(false);
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        console.error('Unexpected error: ', error);
+        console.error("Unexpected error: ", error);
       }
     }
   };
@@ -46,7 +52,7 @@ export const InputBox = () => {
       <p className="text-red-400">{errorMessage}</p>
       <button
         className={`px-4 py-2 mt-2 rounded-md bg-black text-sky-400 ${
-          loading && 'disabled '
+          loading && "disabled "
         }`}
         onClick={(e) => handleClick(e)}
       >

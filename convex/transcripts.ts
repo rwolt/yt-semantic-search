@@ -10,9 +10,12 @@ export const get = query({
 });
 
 export const post = mutation({
-  args: { videoUrl: v.string() },
-  handler: async (ctx, { videoUrl }) => {
-    await ctx.scheduler.runAfter(0, api.text.fetch, { videoUrl });
+  args: {
+    videoUrl: v.string(),
+    collectionId: v.union(v.id("collections"), v.literal("all")),
+  },
+  handler: async (ctx, { videoUrl, collectionId }) => {
+    await ctx.scheduler.runAfter(0, api.text.fetch, { videoUrl, collectionId });
   },
 });
 
@@ -20,6 +23,7 @@ export const postChunks = mutation({
   args: {
     chunks: v.array(
       v.object({
+        collectionId: v.union(v.id("collections"), v.literal("all")),
         videoId: v.string(),
         videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
@@ -38,6 +42,7 @@ export const postChunks = mutation({
     await Promise.all(
       chunks.map(async (chunk) => {
         const {
+          collectionId,
           videoId,
           videoTitle,
           videoChannelName,
@@ -48,6 +53,7 @@ export const postChunks = mutation({
           embedding,
         } = chunk;
         await ctx.db.insert("transcripts", {
+          collectionId,
           videoId,
           videoTitle,
           videoChannelName,
@@ -63,11 +69,16 @@ export const postChunks = mutation({
 });
 
 export const getSimilar = mutation({
-  args: { query: v.string(), filterTag: v.string() },
+  args: {
+    query: v.string(),
+    filterTag: v.string(),
+    collectionId: v.union(v.id("collections"), v.literal("all")),
+  },
   handler: async (ctx, args) => {
     await ctx.scheduler.runAfter(0, api.openai.similarTranscripts, {
       descriptionQuery: args.query,
       filterTag: args.filterTag,
+      collectionId: args.collectionId,
     });
   },
 });

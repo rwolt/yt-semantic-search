@@ -1,9 +1,16 @@
-import { query } from './_generated/server';
+import { v } from "convex/values";
+import { query } from "./_generated/server";
 
 export const getTitles = query({
-  args: {},
-  handler: async (ctx) => {
-    const docs = await ctx.db.query('transcripts').order('desc').collect();
+  args: {
+    collectionId: v.union(v.id("collections"), v.literal("all")),
+  },
+  handler: async (ctx, { collectionId }) => {
+    const docs = await ctx.db
+      .query("transcripts")
+      .filter((q) => q.eq(q.field("collectionId"), collectionId))
+      .order("desc")
+      .collect();
 
     type VideoTitle = {
       videoId: string;

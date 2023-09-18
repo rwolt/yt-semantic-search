@@ -1,19 +1,25 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
 type SearchBoxProps = {
-  handleSearch: (query: string, filter: string | undefined) => Promise<void>;
+  collectionId: Id<"collections"> | "all";
+  handleSearch: (
+    query: string,
+    filter: string | undefined,
+    collectionId: Id<"collections"> | "all"
+  ) => Promise<void>;
 };
 
-export const SearchBox = ({ handleSearch }: SearchBoxProps) => {
+export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<string | undefined>(undefined);
   const tags = useQuery(api.transcripts.getTags);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    handleSearch(query, filter);
+    handleSearch(query, filter, collectionId);
     setQuery("");
   };
   return (

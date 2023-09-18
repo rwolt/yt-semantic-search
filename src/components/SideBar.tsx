@@ -1,49 +1,54 @@
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useState } from 'react';
-import { Authenticated } from 'convex/react';
-import { InputBox } from './InputBox';
-import { NewCollectionForm } from './NewCollectionForm';
-import { CollectionsList } from './CollectionsList';
-import { VideoList } from './VideoList';
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { Authenticated } from "convex/react";
+import { InputBox } from "./InputBox";
+import { NewCollectionForm } from "./NewCollectionForm";
+import { CollectionsList } from "./CollectionsList";
+import { VideoList } from "./VideoList";
+import { useCollectionContext } from "../CollectionContext";
 
 export const SideBar = () => {
-  const [view, setView] = useState<'knowledge-base' | 'collections'>(
-    'knowledge-base'
+  const [view, setView] = useState<"knowledge-base" | "collections">(
+    "knowledge-base"
   );
-  const [collection, setCollection] = useState('');
+
+  const { collectionInfo, setCollection } = useCollectionContext();
 
   const handleBackNavigation = () => {
-    setView('knowledge-base');
-    setCollection('');
+    setView("knowledge-base");
+    setCollection("", "all");
   };
 
   return (
     <div className="flex flex-col w-3/10 h-[calc(100vh-61px)] p-4 bg-slate-200 ">
       <div className="flex align-center mb-2">
-        {view === 'collections' && (
+        {view === "collections" && (
           <>
-            <ArrowLeftIcon className="w-5" onClick={handleBackNavigation} />
-            <h2 className="ml-2">Collection Name</h2>
+            <ArrowLeftIcon
+              className="w-5 cursor-pointer"
+              onClick={handleBackNavigation}
+            />
+            <h2 className="ml-2">{collectionInfo.name}</h2>
           </>
         )}
-        {view === 'knowledge-base' && (
+        {view === "knowledge-base" && (
           <>
-            <h2 className="ml-5">Knowledge Base</h2>
+            <h2 className="ml-7">Knowledge Base</h2>
           </>
         )}
       </div>
 
-      {view === 'knowledge-base' && (
+      {view === "knowledge-base" && (
         <Authenticated>
           <NewCollectionForm />
-          <CollectionsList setView={setView} setCollection={setCollection} />
+          <CollectionsList setView={setView} />
         </Authenticated>
       )}
 
-      {view === 'collections' && (
+      {view === "collections" && (
         <Authenticated>
-          <InputBox />
-          <VideoList collection={collection} />
+          <InputBox collection={collectionInfo} />
+          <VideoList collection={collectionInfo} />
         </Authenticated>
       )}
     </div>

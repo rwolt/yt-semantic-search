@@ -8,8 +8,11 @@ import { api } from "./_generated/api";
 const youtube = new Client();
 
 export const fetch = action({
-  args: { videoUrl: v.string() },
-  handler: async (ctx, { videoUrl }) => {
+  args: {
+    videoUrl: v.string(),
+    collectionId: v.union(v.id("collections"), v.literal("all")),
+  },
+  handler: async (ctx, { videoUrl, collectionId }) => {
     const url = new URL(videoUrl);
     const videoId = url.searchParams.get("v");
     if (videoId) {
@@ -24,6 +27,7 @@ export const fetch = action({
       }
       console.log("Fetched transcript");
       await ctx.scheduler.runAfter(0, api.text.combineAndSplit, {
+        collectionId,
         videoId,
         videoTitle,
         videoChannelName,
@@ -40,6 +44,7 @@ export const fetch = action({
 
 export const combineAndSplit = action({
   args: {
+    collectionId: v.union(v.id("collections"), v.literal("all")),
     videoId: v.string(),
     videoTitle: v.optional(v.string()),
     videoChannelName: v.optional(v.string()),
@@ -53,6 +58,7 @@ export const combineAndSplit = action({
   handler: async (
     ctx,
     {
+      collectionId,
       videoId,
       videoTitle,
       videoChannelName,
@@ -70,6 +76,7 @@ export const combineAndSplit = action({
     for (const entry of transcript) {
       if (!currentChunk) {
         currentChunk = {
+          collectionId,
           videoId,
           videoTitle,
           videoChannelName,
@@ -82,6 +89,7 @@ export const combineAndSplit = action({
       } else if (currentChunk.text.length < maxCharacters) {
         if (!overlappingChunk) {
           overlappingChunk = {
+            collectionId,
             videoId,
             videoTitle,
             videoChannelName,
