@@ -26,7 +26,9 @@ export const getTitles = query({
       });
 
       const collectionDocsArray = await Promise.all(collectionDocsPromises);
-      docs = collectionDocsArray.flat();
+      docs = collectionDocsArray
+        .flat()
+        .sort((a, b) => b._creationTime - a._creationTime);
     } else {
       docs = await ctx.db
         .query('transcripts')
