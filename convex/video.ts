@@ -1,16 +1,39 @@
-import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { v } from 'convex/values';
+import { query } from './_generated/server';
+import { Transcript } from './transcripts';
 
 export const getTitles = query({
   args: {
-    collectionId: v.union(v.id("collections"), v.literal("all")),
+    collectionId: v.union(v.id('collections'), v.literal('all')),
+    userId: v.optional(v.string()),
   },
-  handler: async (ctx, { collectionId }) => {
-    const docs = await ctx.db
-      .query("transcripts")
-      .filter((q) => q.eq(q.field("collectionId"), collectionId))
-      .order("desc")
-      .collect();
+  handler: async (ctx, { collectionId, userId }) => {
+    let docs: Transcript[];
+    if (collectionId === 'all') {
+      const collections = await ctx.db
+        .query('collections')
+        .filter((q) => q.eq(q.field('owner'), userId))
+        .collect();
+
+      const collectionIds = collections.map((collection) => collection._id);
+
+      const collectionDocsPromises = collectionIds.map(async (collectionId) => {
+        const collectionDocs: Transcript[] = await ctx.db
+          .query('transcripts')
+          .filter((q) => q.eq(q.field('collectionId'), collectionId))
+          .collect();
+        return collectionDocs;
+      });
+
+      const collectionDocsArray = await Promise.all(collectionDocsPromises);
+      docs = collectionDocsArray.flat();
+    } else {
+      docs = await ctx.db
+        .query('transcripts')
+        .filter((q) => q.eq(q.field('collectionId'), collectionId))
+        .order('desc')
+        .collect();
+    }
 
     type VideoTitle = {
       videoId: string;

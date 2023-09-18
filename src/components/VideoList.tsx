@@ -1,18 +1,21 @@
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { VideoListItem } from "./VideoListItem";
-import { Id } from "../../convex/_generated/dataModel";
+import { useQuery } from 'convex/react';
+import { useUser } from '@clerk/clerk-react';
+import { api } from '../../convex/_generated/api';
+import { VideoListItem } from './VideoListItem';
+import { Id } from '../../convex/_generated/dataModel';
 
 type VideoListProps = {
   collection: {
     name: string;
-    id: Id<"collections"> | "all";
+    id: Id<'collections'> | 'all';
   };
 };
 
 export const VideoList = ({ collection }: VideoListProps) => {
+  const { user } = useUser();
   const videoItems = useQuery(api.video.getTitles, {
     collectionId: collection.id,
+    userId: user?.id,
   });
 
   return (

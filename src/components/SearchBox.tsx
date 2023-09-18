@@ -1,26 +1,33 @@
-import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useState } from 'react';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
+import { useUser } from '@clerk/clerk-react';
+import { useCollectionContext } from '../CollectionContext';
 
 type SearchBoxProps = {
-  collectionId: Id<"collections"> | "all";
+  collectionId: Id<'collections'> | 'all';
   handleSearch: (
     query: string,
     filter: string | undefined,
-    collectionId: Id<"collections"> | "all"
+    collectionId: Id<'collections'> | 'all'
   ) => Promise<void>;
 };
 
 export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<string | undefined>(undefined);
-  const tags = useQuery(api.transcripts.getTags);
+  const { user } = useUser();
+  const { collectionInfo } = useCollectionContext();
+  const tags = useQuery(api.transcripts.getTags, {
+    userId: user?.id,
+    collectionId: collectionInfo.id,
+  });
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     handleSearch(query, filter, collectionId);
-    setQuery("");
+    setQuery('');
   };
   return (
     <div>
@@ -43,7 +50,7 @@ export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
             htmlFor="searchFilter"
             className="flex flex-col justify-center ml-4 mr-2"
           >
-            Filter:{" "}
+            Filter:{' '}
           </label>
           <select
             className="border-black border-2 rounded-md px-3 py-1 grow"
@@ -51,7 +58,11 @@ export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
           >
             <option value="">None</option>
             {tags?.map((tag) => {
-              return <option value={tag}>{tag}</option>;
+              return (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              );
             })}
           </select>
         </div>

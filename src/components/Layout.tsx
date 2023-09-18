@@ -1,6 +1,6 @@
-import { SideBar } from "./SideBar";
-import { Header } from "./Header";
-import { Main } from "./Main";
+import { SideBar } from './SideBar';
+import { Header } from './Header';
+import { Main } from './Main';
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -1,18 +1,40 @@
-import { api } from "./_generated/api";
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { api } from './_generated/api';
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
+import { Id } from './_generated/dataModel';
+
+type Collection = {
+  _id: Id<'collections'>;
+  _creationTime: number;
+  name: string;
+  owner: string;
+};
+
+export type Transcript = {
+  _id: Id<'transcripts'>;
+  _creationTime: number;
+  collectionId: Id<'collections'> | 'all';
+  videoId: string;
+  videoTitle?: string | undefined;
+  videoChannelName?: string | undefined;
+  videoUploadDate?: string | undefined;
+  offset: number;
+  text: string;
+  tag: string;
+  embedding: number[];
+};
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("transcripts").collect();
+    return await ctx.db.query('transcripts').collect();
   },
 });
 
 export const post = mutation({
   args: {
     videoUrl: v.string(),
-    collectionId: v.union(v.id("collections"), v.literal("all")),
+    collectionId: v.union(v.id('collections'), v.literal('all')),
   },
   handler: async (ctx, { videoUrl, collectionId }) => {
     await ctx.scheduler.runAfter(0, api.text.fetch, { videoUrl, collectionId });
@@ -23,7 +45,7 @@ export const postChunks = mutation({
   args: {
     chunks: v.array(
       v.object({
-        collectionId: v.union(v.id("collections"), v.literal("all")),
+        collectionId: v.union(v.id('collections'), v.literal('all')),
         videoId: v.string(),
         videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
@@ -36,7 +58,7 @@ export const postChunks = mutation({
     ),
   },
   handler: async (ctx, { chunks }) => {
-    console.log("posting chunks with embeddings...");
+    console.log('posting chunks with embeddings...');
     // const { tokenIdentifier } = await ctx.auth.getUserIdentity();
     // console.log("Token Identifier: " + tokenIdentifier);
     await Promise.all(
@@ -52,7 +74,7 @@ export const postChunks = mutation({
           tag,
           embedding,
         } = chunk;
-        await ctx.db.insert("transcripts", {
+        await ctx.db.insert('transcripts', {
           collectionId,
           videoId,
           videoTitle,
@@ -72,7 +94,7 @@ export const getSimilar = mutation({
   args: {
     query: v.string(),
     filterTag: v.string(),
-    collectionId: v.union(v.id("collections"), v.literal("all")),
+    collectionId: v.union(v.id('collections'), v.literal('all')),
   },
   handler: async (ctx, args) => {
     await ctx.scheduler.runAfter(0, api.openai.similarTranscripts, {
@@ -85,7 +107,7 @@ export const getSimilar = mutation({
 
 export const fetchResults = query({
   args: {
-    ids: v.array(v.id("transcripts")),
+    ids: v.array(v.id('transcripts')),
   },
   handler: async (ctx, args) => {
     const results = [];
@@ -101,10 +123,37 @@ export const fetchResults = query({
 });
 
 export const getTags = query({
-  args: {},
-  handler: async (ctx) => {
-    const docs = await ctx.db.query("transcripts").order("desc").collect();
+  args: {
+    collectionId: v.union(v.id('collections'), v.literal('all')),
+    userId: v.optional(v.string()),
+  },
+  handler: async (ctx, { collectionId, userId }) => {
+    let docs: Transcript[];
+    if (collectionId === 'all') {
+      const collections = await ctx.db
+        .query('collections')
+        .filter((q) => q.eq(q.field('owner'), userId))
+        .collect();
 
+      const collectionIds = collections.map((collection) => collection._id);
+
+      const collectionDocsPromises = collectionIds.map(async (collectionId) => {
+        const collectionDocs: Transcript[] = await ctx.db
+          .query('transcripts')
+          .filter((q) => q.eq(q.field('collectionId'), collectionId))
+          .collect();
+        return collectionDocs;
+      });
+
+      const collectionDocsArray = await Promise.all(collectionDocsPromises);
+      docs = collectionDocsArray.flat();
+    } else {
+      docs = await ctx.db
+        .query('transcripts')
+        .filter((q) => q.eq(q.field('collectionId'), collectionId))
+        .order('desc')
+        .collect();
+    }
     const uniqueTags: string[] = [];
     docs.forEach((doc) => {
       if (doc.tag !== undefined && uniqueTags.indexOf(doc.tag) === -1) {
