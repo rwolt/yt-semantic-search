@@ -1,5 +1,13 @@
 import { query, mutation } from './_generated/server';
 import { v } from 'convex/values';
+import { Id } from './_generated/dataModel';
+
+export type Collection = {
+  _id: Id<'collections'>;
+  _creationTime: number;
+  name: string;
+  owner: string;
+};
 
 export const get = query({
   args: {

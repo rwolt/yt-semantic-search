@@ -1,6 +1,7 @@
 import { SideBar } from './SideBar';
 import { Header } from './Header';
 import { Main } from './Main';
+import { Authenticated } from 'convex/react';
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -9,11 +10,13 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         <Header />
       </header>
       <main>
-        <div className="flex flex-row w-full">
-          <SideBar />
-          <Main />
-          {/* {children} */}
-        </div>
+        <Authenticated>
+          <div className="flex flex-row w-full">
+            <SideBar />
+            <Main />
+            {/* {children} */}
+          </div>
+        </Authenticated>
       </main>
       <footer></footer>
     </div>

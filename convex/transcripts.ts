@@ -3,13 +3,6 @@ import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 import { Id } from './_generated/dataModel';
 
-type Collection = {
-  _id: Id<'collections'>;
-  _creationTime: number;
-  name: string;
-  owner: string;
-};
-
 export type Transcript = {
   _id: Id<'transcripts'>;
   _creationTime: number;

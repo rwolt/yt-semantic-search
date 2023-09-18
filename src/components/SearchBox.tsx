@@ -31,11 +31,11 @@ export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
   };
   return (
     <div>
-      <form className="flex flex-row align-center py-2 justify-between rounded-full">
-        <label
+      <form className="flex flex-row align-center py-4 justify-between rounded-full">
+        {/* <label
           htmlFor="search"
           className="flex flex-col justify-center mr-2"
-        ></label>
+        ></label> */}
         <input
           className="border-black border-2  px-3 py-1 w-1/2 rounded-md grow"
           placeholder="Search"
