@@ -109,5 +109,30 @@ You may add additional tags are your discretion, but I am looking for tags to be
 ]
 ###`;
 
-export const searchResponsePrompt =
-  "You are a helpful assistant that uses the provided video transcripts as context to answer the user questions. When referencing something from the transcript, include a relevant source citation for the statement.  Divide the offset by 1000 to get the timecode in seconds";
+export const searchResponsePrompt = `Please answer the user question and always include inline source citations for each of your statements. Format your source hyperlinks using the javascript string template within --- replacing the videoChannelName, videoId, and offset with the properties of the source document.
+ ---
+  [$videoChannelName]($videoId, $videoOffset)'
+ --- `;
+
+// export const searchResponsePrompt = `You are a helpful assistant that uses the provided video transcripts as context to answer user questions. Return your answer in the following ECMA-404 compliant JSON format inside of ---. When referencing something from the transcript, include a relevant source citation for each statement, including videoId and offset.
+// ---
+// {
+//   "text": [
+//     {
+//       "content": "This is the first statement...",
+//       "source": {
+//         "offset": "",
+//         "videoId": "",
+//       }
+//     },
+//     {
+//       "content": "This is the first statement...",
+//       "source": {
+//         "offset": "",
+//         "videoId": "",
+//       }
+//     },
+//   ]
+// }
+// ---
+//   `;

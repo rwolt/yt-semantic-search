@@ -2,17 +2,32 @@ import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
 export const post = mutation({
-  args: { text: v.string() },
-  handler: async (ctx, args) => {
+  args: {
+    chatId: v.string(),
+    text: v.string(),
+    role: v.union(v.literal('user'), v.literal('assistant')),
+  },
+  handler: async (ctx, { role, text, chatId }) => {
     await ctx.db.insert('messages', {
-      text: args.text,
+      chatId,
+      role,
+      text,
     });
   },
 });
 
-export const get = query({
-  handler: async (ctx) => {
-    const newest = await ctx.db.query('messages').order('desc').take(1);
-    return newest[0];
+export const getChatHistory = query({
+  args: {
+    chatId: v.string(),
+  },
+  handler: async (ctx, { chatId }) => {
+    console.log(chatId);
+    const history = await ctx.db
+      .query('messages')
+      .filter((q) => q.eq(q.field('chatId'), chatId))
+      .order('asc')
+      .collect();
+    console.log(history);
+    return history;
   },
 });

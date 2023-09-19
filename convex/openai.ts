@@ -4,6 +4,7 @@ import { api } from './_generated/api';
 import { OpenAI } from 'openai';
 import { generateTagsSystemMessage, searchResponsePrompt } from './prompts';
 import { Doc } from './_generated/dataModel';
+import { ChatCompletionMessageParam } from 'openai/resources/chat';
 // import { Id } from './_generated/dataModel';
 // import { Collection } from './collection';
 
@@ -132,45 +133,92 @@ export const similarTranscripts = action({
       return { ...rest, score: results[idx]._score };
     });
 
-    await ctx.scheduler.runAfter(0, api.openai.chatResponse, {
-      query: descriptionQuery,
-      docs: transcriptsWithScores.slice(0, 3),
-    });
+    // await ctx.scheduler.runAfter(0, api.openai.chatResponse, {
+    //   query: descriptionQuery,
+    //   docs: transcriptsWithScores
+    //     .map((transcript) => {
+    //       const {
+    //         videoId,
+    //         videoChannelName,
+    //         // videoTitle,
+    //         // videoUploadDate,
+    //         offset,
+    //         text,
+    //       } = transcript;
+
+    //       return {
+    //         videoId,
+    //         // videoTitle,
+    //         videoChannelName,
+    //         // videoUploadDate,
+    //         offset: Math.floor(offset / 1000),
+    //         text,
+    //       };
+    //     })
+    //     .slice(0, 4),
+    // });
     return transcriptsWithScores;
   },
 });
 
 export const chatResponse = action({
   args: {
+    chatId: v.string(),
     query: v.string(),
     docs: v.array(
       v.object({
-        _id: v.id('transcripts'),
-        collectionId: v.union(v.id('collections'), v.literal('all')),
+        // _id: v.id('transcripts'),
+        // collectionId: v.union(v.id('collections'), v.literal('all')),
         videoId: v.string(),
-        videoTitle: v.optional(v.string()),
+        // videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
-        videoUploadDate: v.optional(v.string()),
+        // videoUploadDate: v.optional(v.string()),
         offset: v.number(),
         text: v.string(),
-        tag: v.string(),
-        score: v.number(),
+        // tag: v.string(),
+        // score: v.number(),
       })
     ),
   },
-  handler: async (ctx, { query, docs }) => {
+  handler: async (ctx, { query, docs, chatId }) => {
     console.log('generating chat response...');
+    const messages: ChatCompletionMessageParam[] = [
+      { role: 'system', content: `${searchResponsePrompt}` },
+      {
+        role: 'user',
+        content: JSON.stringify({ Context: JSON.stringify(docs), text: query }),
+      },
+    ];
+    console.log(messages);
     const completion = await openai.chat.completions.create({
-      messages: [
-        { role: 'system', content: `${searchResponsePrompt}` },
-        { role: 'user', content: JSON.stringify(docs) + query },
-      ],
+      messages: messages,
       model: 'gpt-3.5-turbo',
     });
+
     const messageText = completion.choices[0].message.content;
+    // Regular expression to match [source](URL) patterns
+    const linkPattern: RegExp = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+    // Function to replace [source](URL) with <a href="URL">text</a>
+    function replaceLinks(match: string, text: string, url: string): string {
+      return `<a href="${url}" className="text-orange-500">${text}</a>`;
+    }
+
+    // Use regular expression to replace links in the text
+    const formattedResponse: string =
+      messageText !== null
+        ? messageText.replace(linkPattern, replaceLinks)
+        : '';
+
+    // Print the formatted response
     console.log(messageText);
-    if (typeof messageText === 'string') {
-      await ctx.runMutation(api.message.post, { text: messageText });
+    console.log(formattedResponse);
+    if (typeof formattedResponse === 'string') {
+      await ctx.runMutation(api.message.post, {
+        role: 'assistant',
+        text: formattedResponse,
+        chatId: chatId,
+      });
     }
   },
 });

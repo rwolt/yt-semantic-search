@@ -12,7 +12,7 @@ export const VideoContainer = () => {
   const playerRef = useRef<YT.Player | null>(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
 
-  const onPlayerReady = (event) => {
+  const onPlayerReady = (event: YT.PlayerEvent) => {
     setIsPlayerReady(true);
     event.target.playVideo();
   };
@@ -25,9 +25,7 @@ export const VideoContainer = () => {
   }, [isPlayerReady, videoInfo]);
 
   const loadVideoWithTime = ({ videoId, timeInSeconds }: VideoInfo) => {
-    console.log('before conditional loadingVideo');
     if (playerRef.current) {
-      console.log('after conditional loadingVideo');
       playerRef.current.loadVideoById({
         videoId,
         startSeconds: timeInSeconds,
@@ -38,10 +36,8 @@ export const VideoContainer = () => {
   useEffect(() => {
     // Wait for the YouTube iframe API script to load
     if (window.YT && typeof window.YT.Player === 'function') {
-      console.log('hello');
       // The YouTube API is available; check if the player has been initialized
       if (!playerRef.current) {
-        console.log('hello from new player');
         playerRef.current = new YT.Player('video-player', {
           height: '360',
           width: '640',

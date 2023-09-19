@@ -13,7 +13,7 @@ export const VideoListItem = ({
   videoChannelName,
 }: VideoListItemProps) => {
   const { setVideo } = useVideoContext();
-  const handleVideoLinkClick = (e) => {
+  const handleVideoLinkClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setVideo(videoId, 0);
   };
