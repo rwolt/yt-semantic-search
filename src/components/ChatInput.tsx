@@ -2,6 +2,7 @@ import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { api } from '../../convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { useState } from 'react';
+import { useCollectionContext } from '../CollectionContext';
 
 type ChatInputProps = {
   chatId: string;
@@ -10,9 +11,15 @@ type ChatInputProps = {
 export const ChatInput = ({ chatId }: ChatInputProps) => {
   const postMessage = useMutation(api.message.post);
   const [query, setQuery] = useState('');
+  const { collectionInfo } = useCollectionContext();
   const handleChatQuery = (e: React.MouseEvent) => {
     e.preventDefault();
-    postMessage({ role: 'user', text: query, chatId: chatId });
+    postMessage({
+      role: 'user',
+      text: query,
+      chatId: chatId,
+      collectionId: collectionInfo.id,
+    });
     setQuery('');
   };
 

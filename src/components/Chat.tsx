@@ -5,10 +5,6 @@ import { useUser } from '@clerk/clerk-react';
 import { Message } from './Message';
 import { ChatInput } from './ChatInput';
 
-// const renderHTML = (htmlString: string) => {
-//   return { __html: htmlString };
-// };
-
 export const Chat = () => {
   const { user } = useUser();
   const [currentChat, setCurrentChat] = useState('');
@@ -32,7 +28,6 @@ export const Chat = () => {
         {chatHistory?.map((message) => (
           <Message key={message._id} text={message.text} role={message.role} />
         ))}
-        {/* <div dangerouslySetInnerHTML={renderHTML(chatResponse?.text || '')} /> */}
       </div>
       <ChatInput chatId={currentChat} />
     </div>
