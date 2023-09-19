@@ -37,7 +37,7 @@ export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
           className="flex flex-col justify-center mr-2"
         ></label> */}
         <input
-          className="border-black border-2  px-3 py-1 w-1/2 rounded-md grow"
+          className="border-black border-2 text-black px-3 py-1 w-1/2 rounded-md grow"
           placeholder="Search"
           type="text"
           id="search"
@@ -53,7 +53,7 @@ export const SearchBox = ({ collectionId, handleSearch }: SearchBoxProps) => {
             Filter:{' '}
           </label>
           <select
-            className="border-black border-2 rounded-md px-3 py-1 grow"
+            className="border-black text-black border-2 rounded-md px-3 py-1 grow"
             onChange={(e) => setFilter(e.target.value)}
           >
             <option value="">None</option>

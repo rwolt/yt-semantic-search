@@ -24,7 +24,7 @@ export const ChatInput = ({ chatId }: ChatInputProps) => {
   };
 
   return (
-    <form className="flex flex-row items-center border-gray-500 border absolute bottom-4 right-4 left-4 focus-within:outline-1 rounded-md ">
+    <form className="flex flex-row items-center border-gray-500 border absolute bottom-4 right-4 left-4 focus-within:outline-1 rounded-md text-black">
       <input
         type="text"
         name="chat"
@@ -34,7 +34,7 @@ export const ChatInput = ({ chatId }: ChatInputProps) => {
         onChange={(e) => setQuery(e.target.value)}
       />
       <button onClick={(e) => handleChatQuery(e)}>
-        <PaperAirplaneIcon className="w-6 absolute bottom-2 right-4" />
+        <PaperAirplaneIcon className="w-6 absolute bottom-2 right-4 text-teal-700" />
       </button>
     </form>
   );

@@ -20,7 +20,7 @@ export const SideBar = () => {
   };
 
   return (
-    <div className="flex flex-col min-w-[350px] max-w-[350px] grow-0 h-[calc(100vh-65px)] p-4 bg-slate-200 ">
+    <div className="flex flex-col min-w-[350px] max-w-[350px] grow-0 h-[calc(100vh-65px)] p-4 bg-dark-gray-800">
       <div className="flex align-center mb-2">
         {view === 'collections' && (
           <>

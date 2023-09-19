@@ -29,7 +29,7 @@ export const Chat = () => {
     }
   }, [chatHistory]);
   return (
-    <div className="bg-slate-300 max-h-[calc(100vh-65px)] min-h-[calc(100vh-65px)] p-6 pt-4 mx-4 mr-8 relative ">
+    <div className="bg-dark-gray-700 border-l-2 border-dark-gray-400 max-h-[calc(100vh-65px)] min-h-[calc(100vh-65px)] p-6 pt-4 mx-4 mr-8 relative ">
       <h2 className="text-2xl">Chat</h2>
       <div
         className=" max-h-[calc(100vh-65px-150px)] overflow-y-auto pb-40px mt-2"

@@ -15,7 +15,7 @@ export const Layout = () => {
           <SignInCard />
         </Unauthenticated>
         <Authenticated>
-          <div className="flex flex-row w-full">
+          <div className="flex flex-row w-full bg-deep-blue-900 text-white bg-dark-gray-700">
             <SideBar />
             <Main />
             {/* {children} */}
