@@ -35,11 +35,9 @@ export const generateTags = action({
       model: 'gpt-3.5-turbo',
     });
     const tag = completion.choices[0].message.content || '';
-    console.log('generated tag: ', tag);
     const taggedChunks = chunks.map((chunk) => {
       return { ...chunk, tag: tag };
     });
-    console.log('tagged the chunks. chunks length: ', taggedChunks.length);
     await ctx.scheduler.runAfter(0, api.openai.generateEmbeddings, {
       chunks: taggedChunks,
     });
@@ -62,9 +60,7 @@ export const generateEmbeddings = action({
     ),
   },
   handler: async (ctx, { chunks }) => {
-    console.log('generating embeddings...\n');
     const allTexts = chunks.map((chunk) => chunk.text);
-    console.log(allTexts.slice(0, 2));
     try {
       const response = await openai.embeddings.create({
         model: 'text-embedding-ada-002',
@@ -77,12 +73,11 @@ export const generateEmbeddings = action({
         return { ...chunk, embedding: embeddings[index] };
       });
 
-      console.log('calling post chunks mutation');
       await ctx.runMutation(api.transcripts.postChunks, {
         chunks: chunksWithEmbeddings,
       });
     } catch (error) {
-      console.error('Error processsing embeddings: ', error);
+      console.error('Error processing embeddings: ', error);
     }
   },
 });
@@ -167,8 +162,19 @@ export const chatResponse = action({
       })
       .slice(0, 4);
 
+    console.log(contextDocs);
+
+    const chatHistory = await ctx.runQuery(api.message.getChatHistory, {
+      chatId,
+    });
+
+    const messageHistory = chatHistory.map((message) => {
+      return { role: message.role, content: message.text };
+    });
+
     const messages: ChatCompletionMessageParam[] = [
       { role: 'system', content: `${searchResponsePrompt}` },
+      ...messageHistory,
       {
         role: 'user',
         content: JSON.stringify({
@@ -183,7 +189,6 @@ export const chatResponse = action({
     });
 
     const messageText = completion.choices[0].message.content;
-    console.log(messageText);
 
     if (typeof messageText === 'string') {
       await ctx.runMutation(api.message.post, {

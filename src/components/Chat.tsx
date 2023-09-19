@@ -22,9 +22,10 @@ export const Chat = () => {
     }
   }, [createNewChat, user]);
   return (
-    <div className="bg-slate-300 h-[calc(100vh-65px)] p-6 pt-4 mx-4 mr-8  relative grow">
+    <div className="bg-slate-300 max-h-[calc(100vh-65px)] min-h-[calc(100vh-65px)] p-6 pt-4 mx-4 mr-8 relative ">
       <h2 className="text-2xl">Chat</h2>
-      <div className="overflow-auto pb-40px mt-2">
+      <div className=" max-h-[calc(100vh-65px-150px)] overflow-y-auto pb-40px mt-2 ">
+        <p></p>
         {chatHistory?.map((message) => (
           <Message key={message._id} text={message.text} role={message.role} />
         ))}

@@ -37,13 +37,11 @@ export const getChatHistory = query({
     chatId: v.string(),
   },
   handler: async (ctx, { chatId }) => {
-    console.log(chatId);
     const history = await ctx.db
       .query('messages')
       .filter((q) => q.eq(q.field('chatId'), chatId))
       .order('asc')
       .collect();
-    console.log(history);
     return history;
   },
 });

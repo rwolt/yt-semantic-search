@@ -6,7 +6,7 @@ import { SignInCard } from './SignInCard';
 
 export const Layout = () => {
   return (
-    <div className="flex flex-col max-h-screen overflow-auto bg-deep-blue  ">
+    <div className="flex flex-col max-h-screen overflow-hidden bg-deep-blue  ">
       <header>
         <Header />
       </header>
