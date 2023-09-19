@@ -1,8 +1,75 @@
 /** @type {import('tailwindcss').Config} */
+// export default {
+//   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+//   theme: {
+//     extend: {},
+//     colors: {
+//       'deep-blue': '#003366',
+//       'light-gray': '#cccccc',
+//       'subtle-orange': '#ff9900',
+//     },
+//   },
+//   plugins: [],
+// };
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        transparent: 'transparent',
+        current: 'currentColor',
+        white: '#ffffff',
+        'deep-blue': {
+          50: '#f2f5ff',
+          100: '#dbe4ff',
+          200: '#bac8ff',
+          300: '#91a7ff',
+          400: '#6783ff',
+          500: '#455bd4',
+          600: '#3349b2',
+          700: '#223790',
+          800: '#152975',
+          900: '#0e1f63',
+        },
+        'light-gray': {
+          50: '#f5f5f5',
+          100: '#e4e4e4',
+          200: '#cccccc',
+          300: '#b3b3b3',
+          400: '#999999',
+          500: '#7f7f7f',
+          600: '#666666',
+          700: '#4c4c4c',
+          800: '#333333',
+          900: '#1a1a1a',
+        },
+        green: {
+          50: '#e6fff0',
+          100: '#c2ffdb',
+          200: '#94ffbd',
+          300: '#61ff9b',
+          400: '#2ff777',
+          500: '#00eb53',
+          600: '#00c440',
+          700: '#00a634',
+          800: '#008a2a',
+          900: '#007820',
+        },
+        orange: {
+          50: '#fff3e6',
+          100: '#ffddb2',
+          200: '#ffbf80',
+          300: '#ffa54d',
+          400: '#ff8c1b',
+          500: '#ff7200',
+          600: '#e65e00',
+          700: '#bf4e00',
+          800: '#993f00',
+          900: '#7a3300',
+        },
+      },
+    },
   },
+  variants: {},
   plugins: [],
 };

@@ -1,5 +1,5 @@
-import { SearchResult } from "./Search";
-import { useVideoContext } from "../VideoContext";
+import { SearchResult } from './Search';
+import { useVideoContext } from '../VideoContext';
 
 type SearchResultCardProps = {
   result: SearchResult;
@@ -27,10 +27,10 @@ export const SearchResultCard = ({ result }: SearchResultCardProps) => {
         onClick={handleVideoLinkClick}
       >
         <div className="flex justify-between">
-          <p>
-            {formatTimeCode(result.offset)} - {result.videoTitle}
+          <p className="whitespace-nowrap overflow-hidden shrink">
+            [{formatTimeCode(result.offset)}] {result.videoTitle}
           </p>
-          <p>Score: {result.score.toFixed(2)}</p>
+          <p className="shrink-0 ml-4">Score: {result.score.toFixed(2)}</p>
         </div>
         <p> {result.videoChannelName}</p>
         {/* <p>Transcript Text: {result.text}</p> */}

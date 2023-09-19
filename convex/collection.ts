@@ -27,6 +27,7 @@ export const getUserCollections = query({
     const collections = await ctx.db
       .query('collections')
       .filter((q) => q.eq(q.field('owner'), userId))
+      .order('desc')
       .collect();
 
     return collections;

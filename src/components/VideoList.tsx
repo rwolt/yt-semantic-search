@@ -23,6 +23,7 @@ export const VideoList = ({ collection }: VideoListProps) => {
       {videoItems?.map((item) => (
         <VideoListItem
           key={item.videoId}
+          videoId={item.videoId}
           videoTitle={item.videoTitle}
           videoChannelName={item.videoChannelName}
         />

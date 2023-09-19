@@ -15,8 +15,7 @@ export const CollectionsList = ({ setView }: CollectionsListProps) => {
   });
 
   return (
-    <div className="mt-4">
-      <CollectionsListItem name="All Collections" id="all" setView={setView} />
+    <div className="mt-4 h-full flex flex-col">
       {collections?.map((item) => (
         <CollectionsListItem
           key={item._id}
@@ -25,6 +24,7 @@ export const CollectionsList = ({ setView }: CollectionsListProps) => {
           setView={setView}
         />
       ))}
+      <CollectionsListItem name="All Collections" id="all" setView={setView} />
     </div>
   );
 };

@@ -111,7 +111,7 @@ export const similarTranscripts = action({
 
     const results = await ctx.vectorSearch('transcripts', 'by_embedding', {
       vector: queryEmbedding,
-      limit: 16,
+      limit: 8,
       ...(collectionId !== 'all' && {
         filter: (q) => q.eq('collectionId', collectionId),
       }),
@@ -119,8 +119,6 @@ export const similarTranscripts = action({
         filter: (q) => q.eq('tag', filterTag),
       }),
     });
-
-    console.log(results.filter);
 
     // Fetch the results
     const transcripts: Array<Doc<'transcripts'>> = await ctx.runQuery(

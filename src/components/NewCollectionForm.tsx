@@ -14,9 +14,14 @@ export const NewCollectionForm = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    const collectionInput = document.querySelector('#collectionNameInput');
+    if (collectionInput instanceof HTMLFormElement) {
+      collectionInput?.checkValidity();
+      collectionInput?.reportValidity();
+    }
     setLoading(true);
     try {
-      if (user) {
+      if (user && collectionName) {
         await createCollection({ name: collectionName, owner: user.id });
       }
       setCollectionName('');
@@ -32,21 +37,23 @@ export const NewCollectionForm = () => {
   };
 
   return (
-    <form className="flex flex-col align-center p-4 bg-slate-500 text-neutral-300  rounded-md">
-      <label htmlFor="collectionNameInput">
-        Enter a name to create a new collection
+    <form className="flex flex-col align-center p-4 bg-slate-600 text-neutral-300 text-xl text-center  rounded-md">
+      <label htmlFor="collectionNameInput" className="mb-2 select-none">
+        Enter name for new collection
       </label>
       <input
-        className="text-black rounded-md px-2"
+        className="text-black rounded-md px-2 text-xl"
         type="text"
         value={collectionName}
         onChange={(e) => setCollectionName(e.target.value)}
         name="collectionNameInput"
         id="collectionNameInput"
+        placeholder="Collection Name"
+        required={true}
       />
       <p className="text-red-400">{errorMessage}</p>
       <button
-        className={`px-4 py-2 mt-2 rounded-md bg-black text-sky-400 ${
+        className={`px-4 py-2 mt-2 rounded-md bg-black text-sky-400 text-xl ${
           loading && 'disabled '
         }`}
         onClick={(e) => handleClick(e)}
