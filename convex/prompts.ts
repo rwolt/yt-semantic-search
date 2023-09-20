@@ -114,32 +114,73 @@ You may add additional tags are your discretion, but I am looking for tags to be
 //   [$videoChannelName]($videoId, $videoOffset)'
 //  --- `;
 
-export const searchResponsePrompt = `You are a helpful assistant that uses the provided video transcripts as context to answer user questions. Answer the question with statements, and cite each statement using the documents as context. Return your answer in the following ECMA-404 compliant JSON format inside of ---. Only reply in JSON. Always include a source property with offset and videoId.
+// export const searchResponsePrompt = `You are a helpful assistant that uses the provided video transcripts as context to answer user questions.  Return your answer in the following ECMA-404 compliant JSON format inside of ---. Only reply in JSON. Always include a source property with offset and videoId.
+// ---
+// {
+//   "text": [
+//     {
+//       "content": "This is the first statement...",
+//       "source": {
+//         "offset": "",
+//         "videoId": "",
+//       }
+//     },
+//     {
+//       "content": "This is the second statement...",
+//       "source": {
+//         "offset": "",
+//         "videoId": "",
+//       }
+//     },
+//     {
+//       "content": "This is the third statement...",
+//       "source": {
+//         "offset": "",
+//         "videoId": "",
+//       }
+//     },
+//   ]
+// }
+// ---
+//   `;
+
+// Answer the question with statements, and cite each statement using the documents as context.
+
+export const searchResponsePrompt = `You are a helpful assistant that uses the provided video transcripts as context to answer user questions. Return your answer in the following ECMA-404 compliant JSON format inside of ---. Answer the question with statements, and cite each statement using the documents as context. Only reply in JSON. Each statement and its citation should be enclosed within a "content" property. Within the content property,  put your statement in a "text" property,  and put the videoId and offset of the source citation in  a "source" property. 
+
 ---
 {
-  "text": [
-    {
-      "content": "This is the first statement...",
-      "source": {
-        "offset": "",
-        "videoId": "",
+  "response": {
+    "text": [
+      {
+        "content": {
+          "text": "This is the first statement...",
+          "source": {
+            "offset": "",
+            "videoId": ""
+          }
+        }
+      },
+      {
+        "content": {
+          "text": "This is the second statement...",
+          "source": {
+            "offset": "",
+            "videoId": ""
+          }
+        }
+      },
+      {
+        "content": {
+          "text": "This is the third statement...",
+          "source": {
+            "offset": "",
+            "videoId": ""
+          }
+        }
       }
-    },
-    {
-      "content": "This is the second statement...",
-      "source": {
-        "offset": "",
-        "videoId": "",
-      }
-    },
-    {
-      "content": "This is the third statement...",
-      "source": {
-        "offset": "",
-        "videoId": "",
-      }
-    },
-  ]
+    ]
+  }
 }
 ---
-  `;
+`;
