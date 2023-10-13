@@ -18,66 +18,74 @@ The method used for obtaining a chat response with source citations involves pro
     "role": "system",
     "content": "You are a helpful assistant that uses the provided video transcripts to answer questions. Only respond in the JSON format within --- ...."
   },
-   ...Chat message history goes here
-  {
-    "role": "user",
-    "text": "When is the next starship test flight?",
-    "context": [
-      {
-        "videoId": "vid01",
-        "videoChannelName": "Video 1 Channel Name",
-        "offsetMs": 3428,
-        "text": "this is the first chunk of transcript text..."
-      },
-      {
-        "videoId": "vid02",
-        "videoChannelName": "Video 2 Channel Name",
-        "offsetMs": 151095,
-        "text": "this is the second chunk of transcript text..."
-      },
-      {
-        "videoId": "vid01",
-        "videoChannelName": "Video 1 Channel Name",
-        "offsetMs": 18529,
-        "text": "this is the third chunk of transcript text..."
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": {
-      "response": {
-        "text": [
-          {
-            "content": {
-              "text": "This is the first statement...",
-              "source": {
-                "offsetMs": 18529,
-                "videoId": "vid01"
-              }
-            }
-          },
-          {
-            "content": {
-              "text": "This is the second statement...",
-              "source": {
-                "offsetMs": 151095,
-                "videoId": "vid02"
-              }
-            }
-          },
-          {
-            "content": {
-              "text": "This is the third statement...",
-              "source": {
-                "offsetMs": 3428,
-                "videoId": "vid01"
-              }
+```
+
+...Chat message history goes here
+
+```json
+{
+  "role": "user",
+  "text": "When is the next starship test flight?",
+  "context": [
+    {
+      "videoId": "vid01",
+      "videoChannelName": "Video 1 Channel Name",
+      "offsetMs": 3428,
+      "text": "this is the first chunk of transcript text..."
+    },
+    {
+      "videoId": "vid02",
+      "videoChannelName": "Video 2 Channel Name",
+      "offsetMs": 151095,
+      "text": "this is the second chunk of transcript text..."
+    },
+    {
+      "videoId": "vid01",
+      "videoChannelName": "Video 1 Channel Name",
+      "offsetMs": 18529,
+      "text": "this is the third chunk of transcript text..."
+    }
+  ]
+},
+{
+  "role": "assistant",
+  "content": {
+    "response": {
+      "text": [
+        {
+          "content": {
+            "text": "This is the first statement...",
+            "source": {
+              "offsetMs": 18529,
+              "videoId": "vid01"
             }
           }
-        ]
-      }
+        },
+        {
+          "content": {
+            "text": "This is the second statement...",
+            "source": {
+              "offsetMs": 151095,
+              "videoId": "vid02"
+            }
+          }
+        },
+        {
+          "content": {
+            "text": "This is the third statement...",
+            "source": {
+              "offsetMs": 3428,
+              "videoId": "vid01"
+            }
+          }
+        }
+      ]
     }
   }
+}
 ]
+```
+
+```
+
 ```
