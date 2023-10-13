@@ -1,10 +1,10 @@
-import { v } from 'convex/values';
-import { action } from './_generated/server';
-import { api } from './_generated/api';
-import { OpenAI } from 'openai';
-import { generateTagsSystemMessage, searchResponsePrompt } from './prompts';
-import { Doc } from './_generated/dataModel';
-import { ChatCompletionMessageParam } from 'openai/resources/chat';
+import { v } from "convex/values";
+import { action } from "./_generated/server";
+import { api } from "./_generated/api";
+import { OpenAI } from "openai";
+import { generateTagsSystemMessage, searchResponsePrompt } from "./prompts";
+import { Doc } from "./_generated/dataModel";
+import { ChatCompletionMessageParam } from "openai/resources/chat";
 // import { Id } from './_generated/dataModel';
 // import { Collection } from './collection';
 
@@ -16,7 +16,7 @@ export const generateTags = action({
   args: {
     chunks: v.array(
       v.object({
-        collectionId: v.union(v.id('collections'), v.literal('all')),
+        collectionId: v.union(v.id("collections"), v.literal("all")),
         videoId: v.string(),
         videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
@@ -29,12 +29,12 @@ export const generateTags = action({
   handler: async (ctx, { chunks }) => {
     const completion = await openai.chat.completions.create({
       messages: [
-        { role: 'system', content: `${generateTagsSystemMessage}` },
-        { role: 'user', content: JSON.stringify(chunks.slice(0, 2)) },
+        { role: "system", content: `${generateTagsSystemMessage}` },
+        { role: "user", content: JSON.stringify(chunks.slice(0, 2)) },
       ],
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
     });
-    const tag = completion.choices[0].message.content || '';
+    const tag = completion.choices[0].message.content || "";
     const taggedChunks = chunks.map((chunk) => {
       return { ...chunk, tag: tag };
     });
@@ -48,7 +48,7 @@ export const generateEmbeddings = action({
   args: {
     chunks: v.array(
       v.object({
-        collectionId: v.union(v.id('collections'), v.literal('all')),
+        collectionId: v.union(v.id("collections"), v.literal("all")),
         videoId: v.string(),
         videoTitle: v.optional(v.string()),
         videoChannelName: v.optional(v.string()),
@@ -63,7 +63,7 @@ export const generateEmbeddings = action({
     const allTexts = chunks.map((chunk) => chunk.text);
     try {
       const response = await openai.embeddings.create({
-        model: 'text-embedding-ada-002',
+        model: "text-embedding-ada-002",
         input: allTexts,
       });
       const embeddings = response.data.map((item) => item.embedding);
@@ -77,21 +77,21 @@ export const generateEmbeddings = action({
         chunks: chunksWithEmbeddings,
       });
     } catch (error) {
-      console.error('Error processing embeddings: ', error);
+      console.error("Error processing embeddings: ", error);
     }
   },
 });
 
 export const similarTranscripts = action({
   args: {
-    collectionId: v.union(v.id('collections'), v.literal('all')),
+    collectionId: v.union(v.id("collections"), v.literal("all")),
     descriptionQuery: v.string(),
     filterTag: v.optional(v.string()),
   },
   handler: async (ctx, { descriptionQuery, filterTag, collectionId }) => {
     // const identity = await ctx.auth.getUserIdentity();
     const response = await openai.embeddings.create({
-      model: 'text-embedding-ada-002',
+      model: "text-embedding-ada-002",
       input: descriptionQuery,
     });
     const queryEmbedding = response.data[0].embedding;
@@ -105,19 +105,19 @@ export const similarTranscripts = action({
     //     collections.map((collection) => collection._id)
     //   );
 
-    const results = await ctx.vectorSearch('transcripts', 'by_embedding', {
+    const results = await ctx.vectorSearch("transcripts", "by_embedding", {
       vector: queryEmbedding,
       limit: 16,
-      ...(collectionId !== 'all' && {
-        filter: (q) => q.eq('collectionId', collectionId),
+      ...(collectionId !== "all" && {
+        filter: (q) => q.eq("collectionId", collectionId),
       }),
       ...(filterTag && {
-        filter: (q) => q.eq('tag', filterTag),
+        filter: (q) => q.eq("tag", filterTag),
       }),
     });
 
     // Fetch the results
-    const transcripts: Array<Doc<'transcripts'>> = await ctx.runQuery(
+    const transcripts: Array<Doc<"transcripts">> = await ctx.runQuery(
       api.transcripts.fetchResults,
       {
         ids: results.map((result) => result._id),
@@ -142,13 +142,13 @@ export const similarTranscripts = action({
 
 export const chatResponse = action({
   args: {
-    collectionId: v.union(v.id('collections'), v.literal('all')),
+    collectionId: v.union(v.id("collections"), v.literal("all")),
     chatId: v.string(),
     query: v.string(),
   },
 
   handler: async (ctx, { query, collectionId, chatId }) => {
-    console.log('generating chat response...');
+    console.log("generating chat response...");
     const transcripts = await ctx.runAction(api.openai.similarTranscripts, {
       collectionId,
       descriptionQuery: query,
@@ -162,8 +162,6 @@ export const chatResponse = action({
       })
       .slice(0, 4);
 
-    console.log(contextDocs);
-
     const chatHistory = await ctx.runQuery(api.message.getChatHistory, {
       chatId,
     });
@@ -173,10 +171,10 @@ export const chatResponse = action({
     });
 
     const messages: ChatCompletionMessageParam[] = [
-      { role: 'system', content: `${searchResponsePrompt}` },
+      { role: "system", content: `${searchResponsePrompt}` },
       ...messageHistory,
       {
-        role: 'user',
+        role: "user",
         content: JSON.stringify({
           Context: JSON.stringify(contextDocs),
           text: query,
@@ -185,14 +183,14 @@ export const chatResponse = action({
     ];
     const completion = await openai.chat.completions.create({
       messages: messages,
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
     });
 
     const messageText = completion.choices[0].message.content;
 
-    if (typeof messageText === 'string') {
+    if (typeof messageText === "string") {
       await ctx.runMutation(api.message.post, {
-        role: 'assistant',
+        role: "assistant",
         text: messageText,
         chatId: chatId,
         collectionId,

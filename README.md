@@ -10,49 +10,72 @@
 
 ## Getting source citations in response
 
-Getting ChatGPT to cite its sources requires some prompt hacking/prompt engineering. It is not clear whether the model is aware of which documents it used to obtain its response, so it is necessary to be explicit. The method for obtaining source citations used involves providing the model with transcript chunks formatted in JSON and prompting the model to respond in a specific JSON format that can later be destructured and formatted as markup.
+The method used for obtaining a chat response with source citations involves providing the language model with transcript chunks formatted as JSON. The model is prompted to respond in a specific JSON format that can later be destructured and correctly formatted for the client application.
 
 ```json
 [
   {
     "role": "system",
-    "content": "You are a helpful assistant that uses the provided video transcripts to answer questions. Your responses should be in JSON format (provide format) and include a source citation for each statement."
-  },
-  {
-    "role": "document",
-    "content": {
-      "id": "c1",
-      "text": "This is the first chunk of video transcript...",
-      "videoURL": "http://youtube.com/video1#t=00m00s"
-    }
-  },
-  {
-    "role": "document",
-    "content": {
-      "id": "c1",
-      "text": "This is the second chunk of video transcript...",
-      "videoURL": "http://youtube.com/video1#t=03m00s"
-    }
+    "content": "You are a helpful assistant that uses the provided video transcripts to answer questions. Only respond in the JSON format within --- ...."
   },
   {
     "role": "user",
-    "content": "What information can you provide based on these videos?"
+    "text": "When is the next starship test flight?",
+    "context": [
+      {
+        "videoId": "vid01",
+        "videoChannelName": "Video 1 Channel Name",
+        "offsetMs": 3428,
+        "text": "this is the first chunk of transcript text..."
+      },
+      {
+        "videoId": "vid02",
+        "videoChannelName": "Video 2 Channel Name",
+        "offsetMs": 151095,
+        "text": "this is the second chunk of transcript text..."
+      },
+      {
+        "videoId": "vid01",
+        "videoChannelName": "Video 1 Channel Name",
+        "offsetMs": 18529,
+        "text": "this is the third chunk of transcript text..."
+      }
+    ]
   },
   {
     "role": "assistant",
     "content": {
-      "text": [
-        {
-          "id": "r1",
-          "content": "This is the first statement...",
-          "source": ""
-        },
-        {
-          "id": "r2",
-          "content": "This is the second statement...",
-          "source": ""
-        }
-      ]
+      "response": {
+        "text": [
+          {
+            "content": {
+              "text": "This is the first statement...",
+              "source": {
+                "offsetMs": 18529,
+                "videoId": "vid01"
+              }
+            }
+          },
+          {
+            "content": {
+              "text": "This is the second statement...",
+              "source": {
+                "offsetMs": 151095,
+                "videoId": "vid02"
+              }
+            }
+          },
+          {
+            "content": {
+              "text": "This is the third statement...",
+              "source": {
+                "offsetMs": 3428,
+                "videoId": "vid01"
+              }
+            }
+          }
+        ]
+      }
     }
   }
 ]
