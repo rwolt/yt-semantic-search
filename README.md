@@ -18,6 +18,7 @@ The method used for obtaining a chat response with source citations involves pro
     "role": "system",
     "content": "You are a helpful assistant that uses the provided video transcripts to answer questions. Only respond in the JSON format within --- ...."
   },
+  // ...Chat message history goes here
   {
     "role": "user",
     "text": "When is the next starship test flight?",
